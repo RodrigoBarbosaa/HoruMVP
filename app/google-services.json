@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207368888360",
+    "project_id": "horu-e8949",
+    "storage_bucket": "horu-e8949.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207368888360:android:45d75f2818c2201202d51d",
+        "android_client_info": {
+          "package_name": "com.example.horumvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_BHkR1Iy4ejiGIXVOKcQVxuxCxBXZm74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
