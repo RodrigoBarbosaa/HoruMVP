@@ -23,7 +23,7 @@ import com.example.horumvp.presenter.login.LoginContract
 import com.example.horumvp.presenter.login.LoginPresenter
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
+fun LoginScreen(onLoginSuccess: () -> Unit, onRegisterClick: () -> Unit) {
     val authRepository = remember { AuthRepository() }
     val loginScreenState = remember { mutableStateOf(LoginScreenState()) }
     val presenter = remember { LoginPresenter(LoginViewImpl(loginScreenState, onLoginSuccess), authRepository) }
@@ -32,7 +32,8 @@ fun LoginScreen(onLoginSuccess: () -> Unit) {
         state = loginScreenState.value,
         onEmailChange = { loginScreenState.value = loginScreenState.value.copy(email = it) },
         onPasswordChange = { loginScreenState.value = loginScreenState.value.copy(password = it) },
-        onLoginClick = { presenter.login(loginScreenState.value.email, loginScreenState.value.password) }
+        onLoginClick = { presenter.login(loginScreenState.value.email, loginScreenState.value.password) },
+        onRegisterClick = onRegisterClick
     )
 }
 
@@ -41,7 +42,8 @@ fun LoginView(
     state: LoginScreenState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
@@ -82,6 +84,15 @@ fun LoginView(
                 Text("Entrar")
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = onRegisterClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Cadastrar")
+        }
     }
 }
 
@@ -121,5 +132,8 @@ class LoginViewImpl(private val state: MutableState<LoginScreenState>,
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen(onLoginSuccess = {})
+    LoginScreen(
+        onLoginSuccess = { /* Handle login success */ },
+        onRegisterClick = { /* Handle register click */ }
+    )
 }
