@@ -1,24 +1,30 @@
 package com.example.horumvp.model.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.horumvp.model.User
+
 
 class FirestoreRepository {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    fun addUser(user: User, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        db.collection("users").document(user.id).set(user)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { e -> onError(e) }
-    }
+    fun insertProperty(userId: String, name: String, address: String, rentprice: String, paymentstatus: Boolean, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val propertyData = hashMapOf(
+            "nome" to name,
+            "endereco" to address,
+            "preco" to rentprice,
+            "statusPagamento" to paymentstatus
+        )
 
-    fun getUser(userId: String, onSuccess: (User) -> Unit, onError: (Exception) -> Unit) {
-        db.collection("users").document(userId).get()
-            .addOnSuccessListener { document ->
-                val user = document.toObject(User::class.java)
-                user?.let { onSuccess(it) }
+        // Referência para a coleção 'properties' dentro do documento de usuário
+        db.collection("properties")
+            .document(userId)
+            .collection("userProperties")
+            .add(propertyData)
+            .addOnSuccessListener {
+                onSuccess()
             }
-            .addOnFailureListener { e -> onError(e) }
+            .addOnFailureListener { e ->
+                onError(e.localizedMessage ?: "Erro ao inserir uma propriedade")
+            }
     }
 }
 

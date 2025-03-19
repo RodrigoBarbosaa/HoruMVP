@@ -1,4 +1,4 @@
-package com.example.horumvp.presenter.feed
+package com.example.horumvp.presenter.home
 
 import com.example.horumvp.model.repository.AuthRepository
 

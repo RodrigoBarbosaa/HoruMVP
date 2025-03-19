@@ -1,24 +1,22 @@
 package com.example.horumvp.view
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.horumvp.presenter.register.RegisterPresenter
+import com.example.horumvp.presenter.registerUser.RegisterUserPresenter
 import com.example.horumvp.model.repository.AuthRepository
-import com.example.horumvp.presenter.register.RegisterContract
+import com.example.horumvp.presenter.registerUser.RegisterUserContract
 
 
 @Composable
 fun RegisterScreen(onRegisterSuccess: () -> Unit) {
     val registerScreenState = remember { mutableStateOf(RegisterScreenState()) }
-    val presenter: RegisterPresenter = remember { RegisterPresenter(RegisterViewImpl(registerScreenState, onRegisterSuccess), AuthRepository()) }
+    val presenter: RegisterUserPresenter = remember { RegisterUserPresenter(RegisterViewImpl(registerScreenState, onRegisterSuccess), AuthRepository()) }
 
     RegisterView(
         state = registerScreenState.value,
@@ -113,7 +111,7 @@ data class RegisterScreenState(
 class RegisterViewImpl(
     private val state: MutableState<RegisterScreenState>,
     private val onRegisterSuccess: () -> Unit
-) : RegisterContract.View {
+) : RegisterUserContract.View {
 
     override fun showRegisterSuccess() {
         state.value = state.value.copy(registerSuccess = true, isLoading = false, errorMessage = null)

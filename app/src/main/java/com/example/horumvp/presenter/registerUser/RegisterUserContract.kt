@@ -1,6 +1,6 @@
-package com.example.horumvp.presenter.register;
+package com.example.horumvp.presenter.registerUser;
 
-interface RegisterContract {
+interface RegisterUserContract {
     // Define os métodos que a View deve implementar para receber atualizações do Presenter
     interface View {
         fun showRegisterSuccess()

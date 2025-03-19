@@ -1,4 +1,4 @@
-package com.example.horumvp.presenter.feed
+package com.example.horumvp.presenter.home
 
 interface HomeContract {
     interface View {

@@ -1,11 +1,11 @@
-package com.example.horumvp.presenter.register
+package com.example.horumvp.presenter.registerUser
 
 import com.example.horumvp.model.repository.AuthRepository
 
-class RegisterPresenter(
-    private val view: RegisterContract.View,
+class RegisterUserPresenter(
+    private val view: RegisterUserContract.View,
     private val authRepository: AuthRepository
-) : RegisterContract.Presenter {
+) : RegisterUserContract.Presenter {
 
     override fun register(name: String, email: String, password: String, confirmPassword: String) {
         if (password != confirmPassword) {
