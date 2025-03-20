@@ -6,15 +6,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 class FirestoreRepository {
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    fun insertProperty(userId: String, name: String, address: String, rentprice: String, paymentstatus: Boolean, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun insertProperty(userId: String, name: String, address: String, rentPrice: String, paymentStatus: Boolean, propertyType: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val propertyData = hashMapOf(
             "nome" to name,
             "endereco" to address,
-            "preco" to rentprice,
-            "statusPagamento" to paymentstatus
+            "preco" to rentPrice,
+            "statusPagamento" to paymentStatus,
+            "tipo" to propertyType, // Armazena o tipo de imóvel
+            "userId" to userId
         )
 
-        // Referência para a coleção 'properties' dentro do documento de usuário
         db.collection("properties")
             .document(userId)
             .collection("userProperties")

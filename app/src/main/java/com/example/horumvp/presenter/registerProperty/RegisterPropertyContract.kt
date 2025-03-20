@@ -9,6 +9,6 @@ interface RegisterPropertyContract {
     }
 
     interface Presenter {
-        fun registerProperty(name: String, address: String, rentPrice: String)
+        fun registerProperty(name: String, address: String, rentPrice: String, propertyType: String)
     }
 }

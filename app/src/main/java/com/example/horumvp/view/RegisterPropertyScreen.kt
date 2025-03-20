@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -31,23 +34,37 @@ fun RegisterPropertyScreen(
     onErrorMessage: (String) -> Unit
 ) {
     val firestoreRepository = remember { FirestoreRepository() }
-    val RegisterPropertyScreenState = remember { mutableStateOf(RegisterPropertyScreenState()) }
-    val presenter = remember { RegisterPropertyPresenter(RegisterPropertyViewImpl(RegisterPropertyScreenState, onRegisterPropertySuccess), firestoreRepository) }
+    val registerScreenState = remember { mutableStateOf(RegisterPropertyScreenState()) }
+    val presenter = remember { RegisterPropertyPresenter(RegisterPropertyViewImpl(registerScreenState, onRegisterPropertySuccess), firestoreRepository) }
+
+    // Lista de tipos de imóvel
+    val propertyTypes = listOf("Casa", "Apartamento", "Comércio")
+    var selectedPropertyType by remember { mutableStateOf(propertyTypes[0]) } // Valor inicial
 
     RegisterPropertyView(
-        state = RegisterPropertyScreenState.value,
-        onRegisterPropertyClick = {name, address, rentPrice ->
-            presenter.registerProperty(name, address, rentPrice)
+        state = registerScreenState.value,
+        onRegisterPropertyClick = { name, address, rentPriceString, propertyType ->
+            if (rentPriceString.isNotEmpty()) {
+                presenter.registerProperty(name, address, rentPriceString, propertyType) // Passa o tipo de imóvel
+            } else {
+                onErrorMessage("Preço de aluguel não pode ser vazio.")
+            }
         },
-        onErrorMessage = onErrorMessage
+        onErrorMessage = onErrorMessage,
+        propertyTypes = propertyTypes,
+        selectedPropertyType = selectedPropertyType,
+        onPropertyTypeSelected = { selectedPropertyType = it }
     )
 }
 
 @Composable
 fun RegisterPropertyView(
     state: RegisterPropertyScreenState,
-    onRegisterPropertyClick: (String, String, String) -> Unit,
-    onErrorMessage: (String) -> Unit
+    onRegisterPropertyClick: (String, String, String, String) -> Unit,  // Adiciona o tipo de imóvel como String
+    onErrorMessage: (String) -> Unit,
+    propertyTypes: List<String>,
+    selectedPropertyType: String,
+    onPropertyTypeSelected: (String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -73,9 +90,29 @@ fun RegisterPropertyView(
         TextField(
             value = rentPrice,
             onValueChange = { rentPrice = it },
-            label = { Text("Preço do Aluguel") },
+            label = { Text("Valor do Aluguel") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Campo de seleção para o tipo de imóvel (Radio Buttons)
+        Text(text = "Tipo de Imóvel", style = MaterialTheme.typography.bodyMedium)
+
+        // Radio buttons para selecionar o tipo de imóvel
+        propertyTypes.forEach { type ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                RadioButton(
+                    selected = selectedPropertyType == type,
+                    onClick = { onPropertyTypeSelected(type) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = type, style = MaterialTheme.typography.bodySmall)
+            }
+        }
 
         if (state.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -87,7 +124,11 @@ fun RegisterPropertyView(
 
         Button(
             onClick = {
-                onRegisterPropertyClick(name, address, rentPrice)
+                if (name.isNotEmpty() && address.isNotEmpty() && rentPrice.isNotEmpty()) {
+                    onRegisterPropertyClick(name, address, rentPrice, selectedPropertyType) // Passa o tipo de imóvel
+                } else {
+                    onErrorMessage("Todos os campos são obrigatórios.")
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !state.isLoading
