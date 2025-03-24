@@ -1,6 +1,7 @@
 package com.example.horumvp.view.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
@@ -31,10 +32,9 @@ fun HomeScreen(navToLogin: () -> Unit, navToRegisterProperty: () -> Unit) {
     // Carregar imóveis
     presenter.loadProperties()
 
-
     HomeView(
         state = homeScreenState.value,
-        onLogoutClick = { presenter.logout() },
+        onLogoutClick = navToLogin,
         onRegisterPropertyClick = navToRegisterProperty,
         presenter = presenter
     )
@@ -80,8 +80,9 @@ fun PropertyList(
     properties: List<Property>,
     onPaymentStatusChange: (String, Boolean) -> Unit
 ) {
-    Column {
-        properties.forEach { property ->
+    LazyColumn {
+        items(properties.size) { index ->
+            val property = properties[index]
             PropertyCard(property = property, onPaymentStatusChange = onPaymentStatusChange)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -101,6 +102,10 @@ fun PropertyCard(
     }
 
     var isChecked by remember { mutableStateOf(property.paymentStatus) }
+    // Atualiza isChecked caso o property.paymentStatus mude
+    LaunchedEffect(property.paymentStatus) {
+        isChecked = property.paymentStatus
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(8.dp)
@@ -118,7 +123,8 @@ fun PropertyCard(
                     checked = isChecked,
                     onCheckedChange = {
                         isChecked = it
-                        onPaymentStatusChange(property.userId, isChecked)
+                        //TODO: Não está atualizando o banco de dados
+                        onPaymentStatusChange(property.userId, isChecked) // Atualiza o status no banco de dados
                     }
                 )
             }
@@ -146,6 +152,5 @@ class HomeViewImpl(
     // Função que chama o sucesso do logout
     override fun onLogoutSuccess() {
         state.value = state.value.copy(isLoading = false)
-        onLogoutSuccess() // Navega de volta para o login após o logout
     }
 }

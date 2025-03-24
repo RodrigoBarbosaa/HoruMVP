@@ -13,7 +13,6 @@ class HomePresenter(
 
     override fun logout() {
         authRepository.logout()
-        view.onLogoutSuccess() // Notifica a View que o logout foi realizado
     }
 
     override fun loadProperties() {

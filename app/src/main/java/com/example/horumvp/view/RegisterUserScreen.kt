@@ -18,13 +18,25 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
     val registerScreenState = remember { mutableStateOf(RegisterScreenState()) }
     val presenter: RegisterUserPresenter = remember { RegisterUserPresenter(RegisterViewImpl(registerScreenState, onRegisterSuccess), AuthRepository()) }
 
+    val isFormValid = remember(registerScreenState.value) {
+        val state = registerScreenState.value
+        state.name.isNotEmpty() && state.email.isNotEmpty() && state.password.isNotEmpty() && state.confirmPassword.isNotEmpty() && state.password == state.confirmPassword
+    }
+
     RegisterView(
         state = registerScreenState.value,
         onNameChange = { registerScreenState.value = registerScreenState.value.copy(name = it) },
         onEmailChange = { registerScreenState.value = registerScreenState.value.copy(email = it) },
         onPasswordChange = { registerScreenState.value = registerScreenState.value.copy(password = it) },
         onConfirmPasswordChange = { registerScreenState.value = registerScreenState.value.copy(confirmPassword = it) },
-        onRegisterClick = { presenter.register(registerScreenState.value.name, registerScreenState.value.email, registerScreenState.value.password, registerScreenState.value.confirmPassword) }
+        onRegisterClick = {
+            if (isFormValid) {
+                presenter.register(registerScreenState.value.name, registerScreenState.value.email, registerScreenState.value.password, registerScreenState.value.confirmPassword)
+            } else {
+                registerScreenState.value = registerScreenState.value.copy(errorMessage = "Preencha todos os campos corretamente.")
+            }
+        },
+        isFormValid = isFormValid
     )
 }
 
@@ -35,7 +47,8 @@ fun RegisterView(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    isFormValid: Boolean
 ) {
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
@@ -87,7 +100,7 @@ fun RegisterView(
         Button(
             onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth(),
-            enabled = !state.isLoading
+            enabled = isFormValid && !state.isLoading
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
