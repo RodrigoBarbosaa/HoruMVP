@@ -70,7 +70,10 @@ fun RegisterPropertyView(
     var address by remember { mutableStateOf("") }
     var rentPrice by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
         Text(text = "Cadastrar Novo Imóvel", style = MaterialTheme.typography.bodyMedium)
 
         Spacer(modifier = Modifier.height(16.dp))

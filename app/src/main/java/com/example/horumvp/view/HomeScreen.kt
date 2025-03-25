@@ -1,5 +1,6 @@
 package com.example.horumvp.view.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -10,11 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.horu.ui.auth.LoginScreenState
 import com.example.horu.ui.auth.LoginView
 import com.example.horu.ui.auth.LoginViewImpl
+import com.example.horumvp.R
 import com.example.horumvp.model.repository.AuthRepository
 import com.example.horumvp.model.repository.FirestoreRepository
 import com.example.horumvp.model.repository.Property
@@ -47,7 +50,20 @@ fun HomeView(
     onRegisterPropertyClick: () -> Unit,
     presenter: HomeContract.Presenter
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_image),
+            contentDescription = "App Logo",
+            modifier = Modifier
+                .size(120.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(text = "Bem-vindo à Home!", style = MaterialTheme.typography.bodyMedium)
 
         Spacer(modifier = Modifier.height(16.dp))

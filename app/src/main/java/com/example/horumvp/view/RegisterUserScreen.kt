@@ -1,13 +1,17 @@
 package com.example.horumvp.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.horumvp.R
 import com.example.horumvp.presenter.registerUser.RegisterUserPresenter
 import com.example.horumvp.model.repository.AuthRepository
 import com.example.horumvp.presenter.registerUser.RegisterUserContract
@@ -50,7 +54,20 @@ fun RegisterView(
     onRegisterClick: () -> Unit,
     isFormValid: Boolean
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_image),
+            contentDescription = "App Logo",
+            modifier = Modifier
+                .size(120.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = state.name,
             onValueChange = onNameChange,

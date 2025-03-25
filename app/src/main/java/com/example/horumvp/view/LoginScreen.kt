@@ -16,9 +16,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.horumvp.model.repository.AuthRepository
 import com.example.horumvp.presenter.login.LoginContract
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
+import com.example.horumvp.R
 
 import com.example.horumvp.presenter.login.LoginPresenter
 
@@ -45,7 +50,20 @@ fun LoginView(
     onLoginClick: () -> Unit,
     onRegisterClick: () -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_image),
+            contentDescription = "App Logo",
+            modifier = Modifier
+                .size(120.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = state.email,
             onValueChange = onEmailChange,
