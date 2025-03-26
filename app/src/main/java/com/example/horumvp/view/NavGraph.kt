@@ -1,15 +1,9 @@
 package com.example.horumvp.view
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.horu.ui.auth.LoginScreen
-import com.example.horumvp.view.home.HomeScreen
-import com.example.horumvp.view.RegisterPropertyScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {

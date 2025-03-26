@@ -1,4 +1,4 @@
-package com.example.horumvp.view.home
+package com.example.horumvp.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
