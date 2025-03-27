@@ -52,7 +52,8 @@ class FirestoreRepository {
                     address = document.getString("address") ?: "",
                     rentPrice = document.getString("rentPrice") ?: "0.0",
                     paymentStatus = document.getBoolean("paymentStatus") ?: false,
-                    propertyType = document.getString("propertyType") ?: ""
+                    propertyType = document.getString("propertyType") ?: "",
+                    propertyId = document.id
                 )
             }
 
@@ -62,18 +63,18 @@ class FirestoreRepository {
         }
     }
 
-    // TODO: nao funciona
-    fun updatePaymentStatus(userId: String, propertyId: String, newStatus: Boolean) {
+
+    fun updatePaymentStatus(userId: String, propertyId: String, newStatus: Boolean, callback: (Boolean, String?) -> Unit) {
         db.collection("properties")
             .document(userId)
             .collection("userProperties")
             .document(propertyId)
             .update("paymentStatus", newStatus)
             .addOnSuccessListener {
-                // Sucesso na atualização
+                callback(true, null) // Sucesso
             }
             .addOnFailureListener { exception ->
-                // Lidar com falhas
+                callback(false, exception.localizedMessage ?: "Erro desconhecido") // Erro
             }
     }
 }
@@ -84,7 +85,8 @@ data class Property(
     val address: String,
     val rentPrice: String,
     val paymentStatus: Boolean,
-    val propertyType: String
+    val propertyType: String,
+    val propertyId: String
 )
 
 

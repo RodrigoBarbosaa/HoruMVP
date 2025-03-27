@@ -6,20 +6,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.example.horumvp.R
 import com.example.horumvp.model.repository.AuthRepository
 import com.example.horumvp.model.repository.FirestoreRepository
@@ -140,6 +144,7 @@ fun PropertyList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PropertyCard(
     property: Property,
@@ -153,12 +158,50 @@ fun PropertyCard(
     }
 
     var isChecked by remember { mutableStateOf(property.paymentStatus) }
+    var isLoading by remember { mutableStateOf(false) }
+    var showSuccessModal by remember { mutableStateOf(false) }
+    var showErrorModal by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Update loading state based on network call
     LaunchedEffect(property.paymentStatus) {
         isChecked = property.paymentStatus
+        isLoading = false
+    }
+
+    // Loading Modal
+    if (isLoading) {
+        BasicAlertDialog(
+            onDismissRequest = { /* Cannot be dismissed during loading */ },
+            properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(bottom = 16.dp)
+                    )
+                    Text(
+                        text = "Processando...",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = "${emoji} ${property.name} - ${property.address}")
@@ -171,9 +214,15 @@ fun PropertyCard(
                 Text(text = "Status de pagamento: ")
                 Checkbox(
                     checked = isChecked,
-                    onCheckedChange = {
-                        isChecked = it
-                        onPaymentStatusChange(property.userId, isChecked) // Atualiza o status no banco de dados
+                    onCheckedChange = { newCheckedStatus ->
+                        // Prevent multiple simultaneous updates
+                        if (!isLoading) {
+                            // Show loading state
+                            isLoading = true
+
+                            // Call the presenter method
+                            onPaymentStatusChange(property.propertyId, newCheckedStatus)
+                        }
                     }
                 )
             }
@@ -218,5 +267,22 @@ class HomeViewImpl(
     }
     override fun onLogoutSuccess() {
         state.value = state.value.copy(isLoading = false)
+    }
+
+    override fun onPaymentStatusUpdateCompleted(propertyId: String, success: Boolean, errorMessage: String?) {
+        if (success) {
+            // Update the local properties list with the new payment status
+            state.value = state.value.copy(
+                properties = state.value.properties.map { property ->
+                    if (property.propertyId == propertyId) {
+                        property.copy(paymentStatus = !property.paymentStatus)
+                    } else {
+                        property
+                    }
+                }
+            )
+        } else {
+            // Handle error scenario
+        }
     }
 }

@@ -11,12 +11,17 @@ interface HomeContract {
         fun showLoading()
         fun hideLoading()
         fun toggleLoadMoreButton(show: Boolean)
+        //fun onPaymentStatusUpdated(propertyId: String, newStatus: Boolean)
+        fun onPaymentStatusUpdateCompleted(propertyId: String, success: Boolean, errorMessage: String? = null)
     }
 
     interface Presenter {
         fun logout()
         fun loadProperties()
         fun loadMoreProperties()
-        fun updatePaymentStatus(propertyId: String, newStatus: Boolean)
+        fun updatePaymentStatus(
+            propertyId: String,
+            newStatus: Boolean
+        )
     }
 }
