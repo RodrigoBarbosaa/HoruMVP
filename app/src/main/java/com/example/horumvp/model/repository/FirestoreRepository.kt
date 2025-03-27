@@ -1,6 +1,8 @@
 package com.example.horumvp.model.repository
 
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
 
 class FirestoreRepository {
@@ -12,7 +14,7 @@ class FirestoreRepository {
             "address" to address,
             "rentPrice" to rentPrice,
             "paymentStatus" to paymentStatus,
-            "propertyType" to propertyType, // Armazena o tipo de imóvel
+            "propertyType" to propertyType,
             "userId" to userId
         )
 
@@ -28,35 +30,45 @@ class FirestoreRepository {
             }
     }
 
-    fun getProperties(userId: String, callback: (List<Property>) -> Unit) {
-        db.collection("properties")
-            .document(userId)  // Busca no documento do usuário
-            .collection("userProperties")  // Busca na subcoleção userProperties
-            .get()
-            .addOnSuccessListener { result ->
-                val properties = result.map { document ->
-                    Property(
-                        userId = document.getString("userId") ?: "",
-                        name = document.getString("name") ?: "",
-                        address = document.getString("address") ?: "",
-                        rentPrice = document.getString("rentPrice") ?: "0.0",
-                        paymentStatus = document.getBoolean("paymentStatus") ?: false,
-                        propertyType = document.getString("propertyType") ?: ""
-                    )
-                }
-                callback(properties)
+    // Função suspensa para obter imóveis com paginação (3 por vez)
+    suspend fun getProperties(userId: String, startAfter: DocumentSnapshot? = null): Pair<List<Property>, DocumentSnapshot?> {
+        val query = db.collection("properties")
+            .document(userId)
+            .collection("userProperties")
+            .limit(3)
+
+        val snapshotQuery = if (startAfter != null) {
+            query.startAfter(startAfter)
+        } else {
+            query
+        }
+
+        return try {
+            val result = snapshotQuery.get().await()
+            val properties = result.documents.map { document ->
+                Property(
+                    userId = document.getString("userId") ?: "",
+                    name = document.getString("name") ?: "",
+                    address = document.getString("address") ?: "",
+                    rentPrice = document.getString("rentPrice") ?: "0.0",
+                    paymentStatus = document.getBoolean("paymentStatus") ?: false,
+                    propertyType = document.getString("propertyType") ?: ""
+                )
             }
-            .addOnFailureListener { exception ->
-                // Lidar com falhas
-            }
+
+            Pair(properties, result.documents.lastOrNull())
+        } catch (e: Exception) {
+            Pair(emptyList(), null)
+        }
     }
-    // TODO: Lidar com erro e sucesso
+
+    // TODO: nao funciona
     fun updatePaymentStatus(userId: String, propertyId: String, newStatus: Boolean) {
         db.collection("properties")
-            .document(userId)  // Acesse o documento do usuário
-            .collection("userProperties")  // Acesse a subcoleção de propriedades do usuário
-            .document(propertyId)  // Documento específico da propriedade
-            .update("paymentStatus", newStatus)  // Atualiza o status de pagamento
+            .document(userId)
+            .collection("userProperties")
+            .document(propertyId)
+            .update("paymentStatus", newStatus)
             .addOnSuccessListener {
                 // Sucesso na atualização
             }

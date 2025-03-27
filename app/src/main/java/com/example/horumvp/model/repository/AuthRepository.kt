@@ -2,19 +2,18 @@ package com.example.horumvp.model.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    fun login(email: String, password: String, callback: (Boolean, String?) -> Unit) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    callback(true, null)
-                } else {
-                    callback(false, task.exception?.localizedMessage ?: "Erro desconhecido")
-                }
-            }
+    suspend fun login(email: String, password: String): Result<Unit> {
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await() // corrotinas
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
 

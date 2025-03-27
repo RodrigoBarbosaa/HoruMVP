@@ -1,6 +1,7 @@
 package com.example.horumvp.view
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.horumvp.presenter.registerProperty.RegisterPropertyPresenter
 import com.example.horumvp.presenter.registerProperty.RegisterPropertyContract
@@ -78,10 +80,19 @@ fun RegisterPropertyView(
             label = { Text("Endereço") },
             modifier = Modifier.fillMaxWidth()
         )
-        TextField(
+
+        OutlinedTextField(
             value = rentPrice,
-            onValueChange = { rentPrice = it },
+            onValueChange = { newValue ->
+                // Filtra a entrada para aceitar apenas números e uma vírgula ou ponto para valores decimais
+                if (newValue.all { it.isDigit() || it == '.' || it == ',' }) {
+                    rentPrice = newValue
+                }
+            },
             label = { Text("Valor do Aluguel") },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number // Isso mostra o teclado numérico
+            ),
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -156,5 +167,7 @@ class RegisterPropertyViewImpl(
         state.value = state.value.copy(isLoading = false)
     }
 }
+
+
 
 
