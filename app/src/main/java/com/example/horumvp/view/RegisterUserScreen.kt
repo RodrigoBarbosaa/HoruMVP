@@ -18,7 +18,7 @@ import com.example.horumvp.presenter.registerUser.RegisterUserContract
 
 
 @Composable
-fun RegisterScreen(onRegisterSuccess: () -> Unit) {
+fun RegisterScreen(onRegisterSuccess: () -> Unit, onBackClick: () -> Unit) {
     val registerScreenState = remember { mutableStateOf(RegisterScreenState()) }
     val presenter: RegisterUserPresenter = remember { RegisterUserPresenter(RegisterViewImpl(registerScreenState, onRegisterSuccess), AuthRepository()) }
 
@@ -40,7 +40,8 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit) {
                 registerScreenState.value = registerScreenState.value.copy(errorMessage = "Preencha todos os campos corretamente.")
             }
         },
-        isFormValid = isFormValid
+        isFormValid = isFormValid,
+        onBackClick = onBackClick
     )
 }
 
@@ -52,7 +53,8 @@ fun RegisterView(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onRegisterClick: () -> Unit,
-    isFormValid: Boolean
+    isFormValid: Boolean,
+    onBackClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(16.dp).fillMaxSize(),
@@ -125,6 +127,15 @@ fun RegisterView(
                 Text("Registrar")
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Voltar")
+        }
     }
 }
 
@@ -164,5 +175,5 @@ class RegisterViewImpl(
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegisterScreen() {
-    RegisterScreen(onRegisterSuccess = {})
+    RegisterScreen(onRegisterSuccess = {}, onBackClick = {})
 }

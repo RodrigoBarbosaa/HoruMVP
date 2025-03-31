@@ -9,26 +9,28 @@ import androidx.navigation.compose.composable
 fun NavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
-            LoginScreen (
+            LoginScreen(
                 onLoginSuccess = { navController.navigate(Screen.Home.route) },
                 onRegisterClick = { navController.navigate(Screen.Register.route) }
             )
         }
         composable("home") {
-            HomeScreen (
+            HomeScreen(
                 navToLogin = { navController.navigate("login") },
-                navToRegisterProperty = {navController.navigate("registerProperty")}
+                navToRegisterProperty = { navController.navigate("registerProperty") }
             )
         }
         composable("register") {
             RegisterScreen(
-                onRegisterSuccess = { navController.navigate(Screen.Home.route) }
+                onRegisterSuccess = { navController.navigate(Screen.Home.route) },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable("registerProperty") {
             RegisterPropertyScreen(
                 onRegisterPropertySuccess = { navController.navigate(Screen.Home.route) },
-                onErrorMessage = {}
+                onErrorMessage = {},
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

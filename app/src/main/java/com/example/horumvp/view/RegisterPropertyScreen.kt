@@ -21,7 +21,8 @@ import com.example.horumvp.model.repository.FirestoreRepository
 @Composable
 fun RegisterPropertyScreen(
     onRegisterPropertySuccess: () -> Unit,
-    onErrorMessage: (String) -> Unit
+    onErrorMessage: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     val firestoreRepository = remember { FirestoreRepository() }
     val registerScreenState = remember { mutableStateOf(RegisterPropertyScreenState()) }
@@ -43,7 +44,8 @@ fun RegisterPropertyScreen(
         onErrorMessage = onErrorMessage,
         propertyTypes = propertyTypes,
         selectedPropertyType = selectedPropertyType,
-        onPropertyTypeSelected = { selectedPropertyType = it }
+        onPropertyTypeSelected = { selectedPropertyType = it },
+        onBackClick = onBackClick
     )
 }
 
@@ -54,7 +56,8 @@ fun RegisterPropertyView(
     onErrorMessage: (String) -> Unit,
     propertyTypes: List<String>,
     selectedPropertyType: String,
-    onPropertyTypeSelected: (String) -> Unit
+    onPropertyTypeSelected: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -136,6 +139,15 @@ fun RegisterPropertyView(
             enabled = !state.isLoading
         ) {
             Text("Cadastrar Imóvel")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Voltar")
         }
     }
 }
