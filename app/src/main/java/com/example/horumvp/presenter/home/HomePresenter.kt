@@ -1,5 +1,6 @@
 package com.example.horumvp.presenter.home
 
+import android.content.Context
 import com.example.horumvp.model.repository.AuthRepository
 import com.example.horumvp.model.repository.FirestoreRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 class HomePresenter(
     private val view: HomeContract.View,
     private val authRepository: AuthRepository,
-    private val propertyRepository: FirestoreRepository
+    private val propertyRepository: FirestoreRepository,
+    private val context: Context
 ) : HomeContract.Presenter {
 
     private var lastVisible: DocumentSnapshot? = null
@@ -69,7 +71,7 @@ class HomePresenter(
         newStatus: Boolean,
     ) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        val db = FirestoreRepository()
+        val db = FirestoreRepository(context)
 
         db.updatePaymentStatus(userId, propertyId, newStatus) { success, errorMessage ->
             if (success) {

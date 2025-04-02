@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -33,10 +34,11 @@ import com.example.horumvp.presenter.home.HomePresenter
 
 @Composable
 fun HomeScreen(navToLogin: () -> Unit, navToRegisterProperty: () -> Unit) {
+    val context = LocalContext.current
     val authRepository = remember { AuthRepository() }
     val homeScreenState = remember { mutableStateOf(HomeScreenState()) }
-    val propertyRepository = remember { FirestoreRepository() }
-    val presenter = remember { HomePresenter(HomeViewImpl(homeScreenState, navToLogin), authRepository, propertyRepository) }
+    val propertyRepository = remember { FirestoreRepository(context) }
+    val presenter = remember { HomePresenter(HomeViewImpl(homeScreenState, navToLogin), authRepository, propertyRepository, context) }
 
     // Carregar imóveis iniciais
     LaunchedEffect(true) {

@@ -75,5 +75,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("androidx.compose.compiler:compiler:1.5.3")
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
 
 }
