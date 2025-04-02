@@ -83,4 +83,18 @@ class HomePresenter(
             }
         }
     }
+
+    override fun deleteProperty(propertyId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val db = FirestoreRepository(context)
+
+        db.deleteProperty(userId, propertyId, onSuccess = {
+            // Property deleted successfully
+            view.removeProperty(propertyId)
+            loadProperties()
+        }, onError = { errorMessage ->
+            // Show error to the user
+            view.showLoginError(errorMessage)
+        })
+    }
 }

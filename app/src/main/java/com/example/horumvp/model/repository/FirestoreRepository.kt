@@ -160,6 +160,20 @@ class FirestoreRepository (context: Context){
                 callback(false, exception.localizedMessage ?: "Erro desconhecido") // Erro
             }
     }
+
+    fun deleteProperty(userId: String, propertyId: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        db.collection("properties")
+            .document(userId)
+            .collection("userProperties")
+            .document(propertyId)
+            .delete()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                onError(e.localizedMessage ?: "Erro ao deletar a propriedade")
+            }
+    }
 }
 
 data class Property(

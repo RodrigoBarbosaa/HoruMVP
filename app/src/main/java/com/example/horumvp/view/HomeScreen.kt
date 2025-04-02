@@ -31,6 +31,7 @@ import com.example.horumvp.model.repository.FirestoreRepository
 import com.example.horumvp.model.repository.Property
 import com.example.horumvp.presenter.home.HomeContract
 import com.example.horumvp.presenter.home.HomePresenter
+import androidx.compose.material.icons.filled.Delete
 
 @Composable
 fun HomeScreen(navToLogin: () -> Unit, navToRegisterProperty: () -> Unit) {
@@ -95,14 +96,22 @@ fun HomeView(
             }
         }
 
-        // Exibir imóveis
-        PropertyList(
-            properties = state.properties,
-            onPaymentStatusChange = { propertyId, newStatus ->
-                presenter.updatePaymentStatus(propertyId, newStatus)
-            },
-            modifier = Modifier.padding(top = 210.dp)
-        )
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else {
+            PropertyList(
+                properties = state.properties,
+                onPaymentStatusChange = { propertyId, newStatus ->
+                    presenter.updatePaymentStatus(propertyId, newStatus)
+                },
+                modifier = Modifier.padding(top = 210.dp),
+                onDeleteClick = { propertyId ->
+                    presenter.deleteProperty(propertyId)
+                },
+            )
+        }
 
         // Botão de logout com ícone
         IconButton(
@@ -135,12 +144,17 @@ fun HomeView(
 fun PropertyList(
     properties: List<Property>,
     onPaymentStatusChange: (String, Boolean) -> Unit,
+    onDeleteClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn (modifier = modifier) {
+    LazyColumn(modifier = modifier) {
         items(properties.size) { index ->
             val property = properties[index]
-            PropertyCard(property = property, onPaymentStatusChange = onPaymentStatusChange)
+            PropertyCard(
+                property = property,
+                onPaymentStatusChange = onPaymentStatusChange,
+                onDeleteClick = onDeleteClick
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -150,7 +164,8 @@ fun PropertyList(
 @Composable
 fun PropertyCard(
     property: Property,
-    onPaymentStatusChange: (String, Boolean) -> Unit
+    onPaymentStatusChange: (String, Boolean) -> Unit,
+    onDeleteClick: (String) -> Unit
 ) {
     val emoji = when (property.propertyType) {
         "Casa" -> "🏠"
@@ -206,12 +221,27 @@ fun PropertyCard(
             .padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "${emoji} ${property.name} - ${property.address}")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "${emoji} ${property.name}")
+                IconButton(onClick = { onDeleteClick(property.propertyId) }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Property"
+                    )
+                }
+            }
+            Text(text = "Endereço: ${property.address}")
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Preço: R$ ${property.rentPrice}")
             Spacer(modifier = Modifier.height(8.dp))
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Status de pagamento: ")
                 Checkbox(
@@ -287,4 +317,11 @@ class HomeViewImpl(
             // Handle error scenario
         }
     }
+
+    override fun removeProperty(propertyId: String) {
+        state.value = state.value.copy(
+            properties = state.value.properties.filter { it.propertyId != propertyId }
+        )
+    }
+
 }

@@ -13,6 +13,7 @@ interface HomeContract {
         fun toggleLoadMoreButton(show: Boolean)
         //fun onPaymentStatusUpdated(propertyId: String, newStatus: Boolean)
         fun onPaymentStatusUpdateCompleted(propertyId: String, success: Boolean, errorMessage: String? = null)
+        fun removeProperty(propertyId: String)
     }
 
     interface Presenter {
@@ -23,5 +24,6 @@ interface HomeContract {
             propertyId: String,
             newStatus: Boolean
         )
+        fun deleteProperty(propertyId: String)
     }
 }
