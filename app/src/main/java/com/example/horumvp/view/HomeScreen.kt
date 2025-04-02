@@ -159,7 +159,6 @@ fun PropertyList(
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PropertyCard(
@@ -179,11 +178,26 @@ fun PropertyCard(
     var showSuccessModal by remember { mutableStateOf(false) }
     var showErrorModal by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
 
     // Update loading state based on network call
     LaunchedEffect(property.paymentStatus) {
         isChecked = property.paymentStatus
         isLoading = false
+    }
+
+    // Show delete confirmation modal
+    if (showDeleteConfirmation) {
+        DeleteConfirmationDialog(
+            onConfirm = {
+                showDeleteConfirmation = false
+                onDeleteClick(property.propertyId)
+            },
+            onDismiss = {
+                showDeleteConfirmation = false
+            }
+        )
     }
 
     // Loading Modal
@@ -227,7 +241,7 @@ fun PropertyCard(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "${emoji} ${property.name}")
-                IconButton(onClick = { onDeleteClick(property.propertyId) }) {
+                IconButton(onClick = { showDeleteConfirmation = true }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Property"
@@ -257,6 +271,44 @@ fun PropertyCard(
                         }
                     }
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    BasicAlertDialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Tem certeza que deseja deletar essa propriedade?",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row {
+                    Button(onClick = onConfirm) {
+                        Text("Confirmar")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = onDismiss) {
+                        Text("Cancelar")
+                    }
+                }
             }
         }
     }
