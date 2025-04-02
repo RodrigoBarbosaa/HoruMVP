@@ -39,7 +39,23 @@ fun HomeScreen(navToLogin: () -> Unit, navToRegisterProperty: () -> Unit) {
     val authRepository = remember { AuthRepository() }
     val homeScreenState = remember { mutableStateOf(HomeScreenState()) }
     val propertyRepository = remember { FirestoreRepository(context) }
-    val presenter = remember { HomePresenter(HomeViewImpl(homeScreenState, navToLogin), authRepository, propertyRepository, context) }
+    // Create HomeViewImpl with a temporary placeholder for the presenter
+
+    val homeView = remember { HomeViewImpl(homeScreenState, navToLogin, object : HomeContract.Presenter {
+        override fun logout() {}
+        override fun loadProperties() {}
+        override fun loadMoreProperties() {}
+        override fun updatePaymentStatus(propertyId: String, newStatus: Boolean) {}
+        override fun deleteProperty(propertyId: String) {}
+    }) }
+
+    // Create the presenter
+    val presenter = remember { HomePresenter(homeView, authRepository, propertyRepository, context) }
+
+    // Set the actual presenter in HomeViewImpl
+    homeView.presenter = presenter
+
+
 
     // Carregar imóveis iniciais
     LaunchedEffect(true) {
@@ -323,7 +339,8 @@ data class HomeScreenState(
 
 class HomeViewImpl(
     private val state: MutableState<HomeScreenState>,
-    private val onLogoutSuccess: () -> Unit
+    private val onLogoutSuccess: () -> Unit,
+    var presenter: HomeContract.Presenter,
 ) : HomeContract.View {
 
     override fun displayProperties(properties: List<Property>) {
@@ -374,6 +391,6 @@ class HomeViewImpl(
         state.value = state.value.copy(
             properties = state.value.properties.filter { it.propertyId != propertyId }
         )
+        presenter.loadProperties()
     }
-
 }
