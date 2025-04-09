@@ -122,10 +122,10 @@ fun HomeView(
                 onPaymentStatusChange = { propertyId, newStatus ->
                     presenter.updatePaymentStatus(propertyId, newStatus)
                 },
-                modifier = Modifier.padding(top = 210.dp),
                 onDeleteClick = { propertyId ->
                     presenter.deleteProperty(propertyId)
                 },
+                modifier = Modifier.padding(top = 210.dp),
             )
         }
 
@@ -391,6 +391,5 @@ class HomeViewImpl(
         state.value = state.value.copy(
             properties = state.value.properties.filter { it.propertyId != propertyId }
         )
-        presenter.loadProperties()
     }
 }

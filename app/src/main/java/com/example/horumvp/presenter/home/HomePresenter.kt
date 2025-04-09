@@ -91,10 +91,10 @@ class HomePresenter(
         db.deleteProperty(userId, propertyId, onSuccess = {
             // Property deleted successfully
             view.removeProperty(propertyId)
-            loadProperties()
         }, onError = { errorMessage ->
             // Show error to the user
             view.showLoginError(errorMessage)
         })
+        loadMoreProperties()
     }
 }
