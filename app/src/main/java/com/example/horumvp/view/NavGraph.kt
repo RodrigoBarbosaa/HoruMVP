@@ -7,7 +7,13 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "welcome") {
+        composable("welcome") {
+            WelcomePageScreen(
+                goToLogin = { navController.navigate("login") },
+                goToSignUp = { navController.navigate("register") }
+            )
+        }
         composable("login") {
             LoginScreen(
                 onLoginSuccess = { navController.navigate(Screen.Home.route) },
