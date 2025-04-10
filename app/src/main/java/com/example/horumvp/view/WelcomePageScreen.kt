@@ -13,24 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.horumvp.model.repository.AuthRepository
-import com.example.horumvp.presenter.welcomePage.WelcomePageContract
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.example.horumvp.R
-
-import com.example.horumvp.presenter.welcomePage.WelcomePagePresenter
+import com.example.horumvp.presenter.login.WelcomePageContract
+import com.example.horumvp.presenter.login.WelcomePagePresenter
 
 @Composable
 fun WelcomePageScreen(goToLogin: () -> Unit, goToSignUp: () -> Unit) {
-    val view = remember {
-      WelcomeViewImpl(
-        goToLogin = goToLogin,
-        gotToSignUp = goToSignUp
-      ) 
-    }
-
-    val presenter = remember { WelcomePagePresenter(view) }
+    WelcomePageView(
+        onLogin = goToLogin,
+        onSignUp = goToSignUp
+    )
 }
 
 @Composable
@@ -52,8 +47,12 @@ fun WelcomePageView(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Bem-vindo ao Horu!", modifier = Modifier.padding(bottom = 16.dp))
-
+        Text(
+            text = "Bem-vindo ao Horu!",
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
@@ -93,7 +92,7 @@ class WelcomeViewImpl(
 @Preview(showBackground = true)
 @Composable
 fun PreviewWelcomeScreen() {
-    WelcomeScreen(
+    WelcomePageScreen(
         goToLogin = {},
         goToSignUp = {}
     )
